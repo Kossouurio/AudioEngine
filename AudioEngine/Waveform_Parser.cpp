@@ -2,8 +2,12 @@
 #include <iostream>
 
 WAVEParser::WAVEParser()
+	: m_header({})
+	, m_descriptor({})
+	, m_dataInfo({})
+	, m_size(0)
 {
-	m_size = 0;
+	m_data = std::vector<char>();
 }
 
 void WAVEParser::ReadWaveFile(char const* _path)
@@ -38,18 +42,19 @@ void WAVEParser::ReadWaveFile(char const* _path)
 	{
 		fseek(pFile, offset, SEEK_SET);
 		fread(&testt, sizeof(WAVE_DATA_INFO), 1, pFile);
+		offset += sizeof(WAVE_DATA_INFO);
 
 		if (testt.DataBlocID == 0x61746164)
 		{
-			fread(&m_dataInfo, sizeof(WAVE_DATA_INFO), 1, pFile);
-			offset += sizeof(WAVE_DATA_INFO);
-
+			m_dataInfo = testt;
 			fseek(pFile, offset, SEEK_SET);
-			fread(&m_data, m_dataInfo.DataSize, 1, pFile);
+
+			m_data.resize(m_dataInfo.DataSize);
+			fread(&m_data[0], sizeof(m_data[0]), m_data.size(), pFile);
+
 			break;
 		}
 
-		offset += sizeof(WAVE_DESCRIPTOR);
 		offset += testt.DataSize;
 	}
 

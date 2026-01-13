@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #pragma pack(push,1)
 struct WAVE_HEADER
@@ -35,7 +36,7 @@ public:
 	WAVE_HEADER m_header;
 	WAVE_DESCRIPTOR m_descriptor;
 	WAVE_DATA_INFO m_dataInfo;
-	char* m_data;
+	std::vector<char> m_data;
 
 	long m_size;
 
