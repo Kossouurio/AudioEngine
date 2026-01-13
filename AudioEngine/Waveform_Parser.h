@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <string>
+#include <cstdint>
 #include <vector>
 
 #pragma pack(push,1)

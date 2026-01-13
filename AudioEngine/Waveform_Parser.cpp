@@ -1,5 +1,7 @@
 #include "Waveform_Parser.h"
+#include <cstdio>
 #include <iostream>
+#include <vector>
 
 WAVEParser::WAVEParser()
 	: m_header({})
@@ -34,9 +36,7 @@ void WAVEParser::ReadWaveFile(char const* _path)
 	m_descriptor.BitsPerSample /= 8;
 
 
-	WAVE_DATA_INFO testt;
-	testt.DataBlocID = 0;
-	testt.DataSize = 0;
+	WAVE_DATA_INFO testt{0, 0};
 
 	for (;;)
 	{
