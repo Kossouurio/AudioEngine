@@ -7,7 +7,7 @@ using namespace std;
 int main()
 {
 	MB::WAVEParser waveFile;
-	const char* filename = "file_example_WAV_10MG.wav"; // Symphony_No.6, file_example_WAV_1MG, Haydn_94_Andante
+	const char* filename = "Haydn_94_Andante.wav"; // Symphony_No.6, file_example_WAV_1MG, Haydn_94_Andante
 	std::filesystem::path path = BASE_PATH / "AudioEngine\\src\\" / filename;
 	waveFile.ReadWaveFile(path.string().c_str());
 
@@ -22,7 +22,11 @@ int main()
 		audio_buffer[i] = 0.3 * sinf(2.0f * 3.14159265f * SampleRate * (float)i / (float)waveFile.m_descriptor.BytePerSec); // 0.3 c'est l'atténuation d'amplitude 
 	}
 
-	waveFile.SetData(audio_buffer);
+	MB::WAVEParser Myfile;
+	Myfile.SetData(audio_buffer);
+	Myfile.SetSampleRate(SampleRate);
+	Myfile.SetChannelNumber(1);
+	Myfile.ExtractFile("Myfile.wav");
 
 	return 0;
 }

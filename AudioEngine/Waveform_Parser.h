@@ -18,7 +18,7 @@ namespace MB
 		uint32_t FormatBlocID;
 		uint32_t BlocSize;
 		uint16_t AudioFormat;
-		uint16_t NbrCanaux;
+		uint16_t NbrChannels;
 		uint32_t SampleRate;
 		uint32_t BytePerSec;
 		uint16_t BytePerBloc;
@@ -33,7 +33,7 @@ namespace MB
 
 	struct CHANNELS
 	{
-		int ChannelNumber;
+		uint32_t ChannelNumber;
 		std::map<int, std::vector<char>> m_data;
 
 		void AddDataTo(int _channel, char& _data, int _bitsPerSample)
@@ -62,13 +62,18 @@ namespace MB
 		void ReadWaveFile(char const* _path);
 		void DivideChannels();
 
-		void SetData(std::vector<char>& _data);
 		void SetData(std::vector<float>& _data);
 		void SetData(std::vector<int>& _data);
+		void SetSampleRate(uint32_t _numb);
+		void SetChannelNumber(uint32_t _numb);
 
 		void ExtractFile(char const* _name);
 
 		void Print();
+
+	private:
+		void Init();
+		void UpdateData();
 	};
 
 }
