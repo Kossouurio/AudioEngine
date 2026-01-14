@@ -5,6 +5,11 @@
 
 namespace MB
 {
+#define RIFF_ID 0x46464952
+#define WAVE_ID 0x45564157
+#define FMT_ID  0x20746D66
+#define DATA_ID 0x61746164
+
 	WAVEParser::WAVEParser()
 		: m_header({})
 		, m_descriptor({})
@@ -99,7 +104,7 @@ namespace MB
 		m_data = newData;
 		m_dataInfo.DataSize = newData.size();
 		m_descriptor.AudioFormat = 3;	/// 3: IEEE 754 float
-		m_descriptor.BitsPerSample = 4;
+		m_descriptor.BitsPerSample = sizeof(float) * 8;
 		UpdateData();
 	}
 
@@ -113,7 +118,7 @@ namespace MB
 		m_data = newData;
 		m_dataInfo.DataSize = newData.size();
 		m_descriptor.AudioFormat = 1;	/// 1: PCM integer
-		m_descriptor.BitsPerSample = 2;
+		m_descriptor.BitsPerSample = sizeof(int) * 8;
 		UpdateData();
 	}
 
@@ -144,10 +149,10 @@ namespace MB
 			std::cout << "Success to open file!" << '\n'; std::cout << "File path : " << _name << "\n\n";
 		}
 
-		fwrite(&m_header, sizeof(WAVE_HEADER), 1, pFile);
-		fwrite(&m_descriptor, sizeof(WAVE_DESCRIPTOR), 1, pFile);
-		fwrite(&m_dataInfo, sizeof(WAVE_DATA_INFO), 1, pFile);
-		fwrite(&m_data[0], sizeof(m_data[0]), m_data.size(), pFile);
+		if (fwrite(&m_header, sizeof(WAVE_HEADER), 1, pFile) != 1) { std::cout << "Write Header : Not Good !" << "\n"; };
+		if (fwrite(&m_descriptor, sizeof(WAVE_DESCRIPTOR), 1, pFile) != 1) { std::cout << "Write Descriptor : Not Good !" << "\n"; };
+		if (fwrite(&m_dataInfo, sizeof(WAVE_DATA_INFO), 1, pFile) != 1) { std::cout << "Write Data Info : Not Good !" << "\n"; };
+		if (fwrite(m_data.data(), m_data.size(), 1, pFile) != 1) { std::cout << "Write Data : Not Good !" << "\n"; };
 
 		m_size = ftell(pFile);
 		fclose(pFile);
@@ -180,20 +185,20 @@ namespace MB
 
 	void WAVEParser::Init()
 	{
-		m_header.FileFormatID = 1163280727;	/// 0x52, 0x49, 0x46, 0x46
+		m_header.FileTypeBlocID = RIFF_ID;	/// 0x52, 0x49, 0x46, 0x46 
 		m_header.FileSize = 36;	/// Overall file size minus 8 bytes
-		m_header.FileTypeBlocID = 1179011410;	/// 0x57, 0x41, 0x56, 0x45
+		m_header.FileFormatID = WAVE_ID;	/// 0x57, 0x41, 0x56, 0x45
 
-		m_descriptor.FormatBlocID = 544501094;	/// 0x66, 0x6D, 0x74, 0x20
+		m_descriptor.FormatBlocID = FMT_ID;	/// 0x66, 0x6D, 0x74, 0x20
 		m_descriptor.BlocSize = 16;	/// 0x10 Constant for PCM
 		m_descriptor.AudioFormat = 1;	/// 1: PCM integer, 3: IEEE 754 float
 		m_descriptor.NbrChannels = 1;	/// 
 		m_descriptor.SampleRate = 44100;	/// 
-		m_descriptor.BitsPerSample = 2;	/// 
+		m_descriptor.BitsPerSample = 32;	/// 
 		m_descriptor.BytePerBloc = m_descriptor.NbrChannels * (m_descriptor.BitsPerSample / 8);	/// NbrChannels * BitsPerSample/8
 		m_descriptor.BytePerSec = m_descriptor.SampleRate * m_descriptor.BytePerBloc;	/// Frequency * BytePerBloc
 
-		m_dataInfo.DataBlocID = 1635017060;	/// 0x64, 0x61, 0x74, 0x61
+		m_dataInfo.DataBlocID = DATA_ID;	/// 0x64, 0x61, 0x74, 0x61
 		m_dataInfo.DataSize = 0;	/// 
 	}
 
